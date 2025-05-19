@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "trophy-bot"
+version = "0.1.0"
+description = "Discord dice roller for Trophy"
+authors = ["Kyle Maxwell <kylemxl@icloud.com>"]
+packages = [{ include = "trophy_bot", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+"discord.py" = "^2.5.2"
+aiosqlite = "^0.20.0"
+python-dotenv = "^1.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2"
+pytest-asyncio = "^0.23"          # async test harness
+coverage = "^7.5"
+ruff = "^0.11"                    # linter/formatter
+mypy = "^1.10"
+pre-commit = "^3.7"
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "I", "D", "C"]
+ignore = ["E203"]        # if you prefer Black’s choices
+extend-ignore = ["D100"]         # e.g. skip missing docstring for modules
+exclude = ["build/", "docs/"]    
+per-file-ignores = { "tests/*" = ["D", "S101"] }      # relax docstring & security in tests
