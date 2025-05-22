@@ -6,7 +6,7 @@ trophybot is a Discord dice roller for the Trophy RPG.
 
 1. Create a `.env` file in the project root and set your Discord bot token:
 
-   ```
+   ```sh
    DISCORD_TOKEN=your_discord_bot_token_here
    ```
 
