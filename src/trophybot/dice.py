@@ -1,4 +1,5 @@
-"""Roll dice for the Trophy RPG system.
+"""
+Roll dice for the Trophy RPG system.
 
 This module provides functions to roll a single d6 and a pool of d6s.
 """
