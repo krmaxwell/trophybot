@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from trophybot.dice import roll_d6
 
 intents = discord.Intents.default()
+intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 
