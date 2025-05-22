@@ -1,9 +1,9 @@
 [tool.poetry]
-name = "trophy-bot"
+name = "trophybot"
 version = "0.1.0"
 description = "Discord dice roller for Trophy"
 authors = ["Kyle Maxwell <kylemxl@icloud.com>"]
-packages = [{ include = "trophy_bot", from = "src" }]
+packages = [{ include = "trophybot", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.13"
@@ -28,3 +28,6 @@ ignore = ["E203"]        # if you prefer Black’s choices
 extend-ignore = ["D100"]         # e.g. skip missing docstring for modules
 exclude = ["build/", "docs/"]    
 per-file-ignores = { "tests/*" = ["D", "S101"] }      # relax docstring & security in tests
+
+[tool.poetry.scripts]
+trophybot = "trophybot.bot:main"
