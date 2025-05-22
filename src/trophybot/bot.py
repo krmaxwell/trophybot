@@ -6,11 +6,6 @@ from dotenv import load_dotenv
 
 from trophybot.dice import roll_d6
 
-load_dotenv()
-TOKEN = os.getenv("DISCORD_TOKEN")
-if TOKEN is None:
-    raise RuntimeError("DISCORD_TOKEN environment variable not set")
-
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
@@ -23,8 +18,13 @@ async def roll_d6_command(ctx):
 
 
 def main():
-    """Run the Discord bot."""
-    bot.run(TOKEN)
+    """Load environment and run the Discord bot."""
+    load_dotenv()
+    try:
+        token = os.environ["DISCORD_TOKEN"]
+    except KeyError:
+        raise RuntimeError("DISCORD_TOKEN environment variable not set") from None
+    bot.run(token)
 
 
 if __name__ == "__main__":
