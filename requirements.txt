@@ -14,8 +14,6 @@ aiosqlite==0.20.0
     # via trophybot (pyproject.toml)
 attrs==25.3.0
     # via aiohttp
-audioop-lts==0.2.1
-    # via discord-py
 cffi==1.17.1
     # via pynacl
 discord-py==2.5.2
