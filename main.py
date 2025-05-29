@@ -20,6 +20,10 @@ def trophybot(request):
     if signature is None or timestamp is None or DISCORD_PUBLIC_KEY is None:
         return ("Unauthorized", 401)
 
+    max_size = 8 * 1024
+    content_len = request.headers.get("Content-Length")
+    if content_len is None or int(content_len) > max_size:
+        return ("Payload too large", 413)
     body = request.get_data(as_text=True)
     try:
         verify_key = VerifyKey(bytes.fromhex(DISCORD_PUBLIC_KEY))
