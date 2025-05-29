@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 from nacl.exceptions import BadSignatureError
 from nacl.signing import VerifyKey
@@ -25,6 +26,13 @@ def trophybot(request):
         verify_key.verify(f"{timestamp}{body}".encode(), bytes.fromhex(signature))
     except BadSignatureError:
         return ("Invalid request signature", 401)
+
+    try:
+        req_ts = int(timestamp)
+    except ValueError:
+        return ("Invalid request timestamp", 401)
+    if abs(time.time() - req_ts) > 5:
+        return ("Stale request timestamp", 401)
 
     payload = request.get_json(silent=True)
     if not payload:
