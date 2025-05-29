@@ -24,7 +24,7 @@ def trophybot(request):
     try:
         verify_key = VerifyKey(bytes.fromhex(DISCORD_PUBLIC_KEY))
         verify_key.verify(f"{timestamp}{body}".encode(), bytes.fromhex(signature))
-    except BadSignatureError:
+    except (BadSignatureError, ValueError, TypeError):
         return ("Invalid request signature", 401)
 
     try:
