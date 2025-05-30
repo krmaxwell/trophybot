@@ -1,0 +1,44 @@
+# cloudbuild.yaml
+steps:
+  # 1. Set up Python
+  - name: "python:3.13"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry config virtualenvs.create false
+        poetry install --no-dev
+
+  # 2. Run lint & tests
+  - name: "python:3.13"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        poetry run ruff .
+        poetry run pytest -q
+
+  # 3. Deploy to Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
+    # Use global substitutions for project/region
+    env:
+      - "ENV=prod"
+    args:
+      - "-c"
+      - |
+        gcloud run deploy trophybot \
+          --source . \
+          --project $PROJECT_ID \
+          --region $REGION \
+          --allow-unauthenticated \
+          --update-secrets DISCORD_TOKEN=discord-token:latest \
+          --update-secrets DISCORD_PUBLIC_KEY=discord-pubkey:latest
+
+# Specify variables (Cloud Build UI will prompt)
+substitutions:
+  _REGION: "us-central1"
+
+timeout: "1200s" # e.g. allow 20 minutes if needed

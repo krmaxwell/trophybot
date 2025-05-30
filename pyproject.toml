@@ -13,6 +13,7 @@ packages = [{ include = "trophybot", from = "src" }]
 python = "^3.13"
 python-dotenv = "^1.0"
 flask = "^2.2.5"
+requests = "^2.31.0"
 pynacl = "^1.5.0"
 functions-framework = "^3.0.0"
 gunicorn = "^20.1.0"
@@ -31,7 +32,7 @@ line-length = 88
 [tool.ruff.lint]
 select = ["E", "F", "B", "I", "D", "C"]
 ignore = ["E203", "D203", "D212"]
-extend-ignore = ["D100"]         # e.g. skip missing docstring for modules
+extend-ignore = ["D100", "D205"]         # e.g. skip missing docstring for modules
 exclude = ["build/", "docs/"]    
 per-file-ignores = { "tests/*" = ["D", "S101"] }      # relax docstring & security in tests
 
