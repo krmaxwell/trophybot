@@ -2,19 +2,25 @@ import os
 import sys
 import time
 
+from dotenv import load_dotenv
+from flask import Flask, request
 from nacl.exceptions import BadSignatureError
 from nacl.signing import VerifyKey
+
+load_dotenv()
+
+app = Flask(__name__)
 
 # Allow importing trophybot package from src directory.
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
-from trophybot.dice import roll_d6
+from trophybot.dice import roll_d6  # noqa: E402
 
 DISCORD_PUBLIC_KEY = os.environ.get("DISCORD_PUBLIC_KEY")
 
 
 def trophybot(request):
-    """Google Cloud Function entry point for Discord slash command."""
+    """Discord interactions HTTP endpoint."""
     signature = request.headers.get("X-Signature-Ed25519")
     timestamp = request.headers.get("X-Signature-Timestamp")
     if signature is None or timestamp is None or DISCORD_PUBLIC_KEY is None:
@@ -56,3 +62,14 @@ def trophybot(request):
         return {"type": 4, "data": {"content": f"Unknown command: {name}"}}
 
     return {}
+
+
+@app.route("/", methods=["POST"])
+def interactions():
+    """Flask route for Discord interactions."""
+    return trophybot(request)
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
