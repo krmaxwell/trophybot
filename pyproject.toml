@@ -37,4 +37,3 @@ per-file-ignores = { "tests/*" = ["D", "S101"] }      # relax docstring & securi
 
 [tool.poetry.scripts]
 trophybot = "trophybot.bot:main"
-start = "functions_framework --target=interactions --port=$PORT"
