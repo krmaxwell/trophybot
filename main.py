@@ -14,13 +14,12 @@ app = Flask(__name__)
 # Allow importing trophybot package from src directory.
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
-from trophybot.dice import roll_d6  # noqa: E402
-
-DISCORD_PUBLIC_KEY = os.environ.get("DISCORD_PUBLIC_KEY")
+import trophybot.dice as dice  # noqa: E402
 
 
 def trophybot(request):
     """Discord interactions HTTP endpoint."""
+    DISCORD_PUBLIC_KEY = os.environ.get("DISCORD_PUBLIC_KEY")
     signature = request.headers.get("X-Signature-Ed25519")
     timestamp = request.headers.get("X-Signature-Timestamp")
     if signature is None or timestamp is None or DISCORD_PUBLIC_KEY is None:
@@ -33,7 +32,8 @@ def trophybot(request):
     body = request.get_data(as_text=True)
     try:
         verify_key = VerifyKey(bytes.fromhex(DISCORD_PUBLIC_KEY))
-        verify_key.verify(f"{timestamp}{body}".encode(), bytes.fromhex(signature))
+        message = f"{timestamp}{body}".encode()
+        verify_key.verify(bytes.fromhex(signature) + message)
     except (BadSignatureError, ValueError, TypeError):
         return ("Invalid request signature", 401)
 
@@ -56,8 +56,8 @@ def trophybot(request):
     if payload.get("type") == 2:
         data = payload.get("data", {})
         name = data.get("name")
-        if name == "roll_d6":
-            result = roll_d6()
+        if name == "roll":
+            result = dice.roll()
             return {"type": 4, "data": {"content": f"🎲 You rolled: {result}"}}
         return {"type": 4, "data": {"content": f"Unknown command: {name}"}}
 

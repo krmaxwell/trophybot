@@ -26,7 +26,10 @@ trophybot is a Discord dice roller for the Trophy RPG.
 
 Use the following slash commands in Discord:
 
-- `/roll_d6`: Roll a six-sided die and return the result.
+- `/roll [light] [dark]`
+  - if issued just as `/roll`, it rolls one d6 and reports the result
+  - if issued as `/roll [light]` (e.g. `/roll 2`), it rolls that many light-type d6s and reports the highest
+  - if issued as `/roll [light] [dark]` (e.g. `/roll 2 3`), it rolls that many light-type and dark-type d6s, highlights the highest die and whether it was dark
 
 ## Cloud Run Deployment
 
