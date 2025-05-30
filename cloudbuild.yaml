@@ -21,6 +21,9 @@ steps:
     args:
       - "-c"
       - |
+        pip install poetry
+        poetry config virtualenvs.create false
+        poetry install --without dev --no-interaction
         poetry run ruff .
         poetry run pytest -q
 
