@@ -35,7 +35,7 @@ steps:
         gcloud run deploy trophybot \
           --source . \
           --project $PROJECT_ID \
-          --region $REGION \
+          --region $_REGION \
           --allow-unauthenticated \
           --update-secrets DISCORD_TOKEN=discord-token:latest \
           --update-secrets DISCORD_PUBLIC_KEY=discord-pubkey:latest
