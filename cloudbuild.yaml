@@ -1,4 +1,8 @@
 # cloudbuild.yaml
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 steps:
   # 1. Set up Python
   - name: "python:3.13"
@@ -23,7 +27,6 @@ steps:
   # 3. Deploy to Cloud Run
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: "bash"
-    # Use global substitutions for project/region
     env:
       - "ENV=prod"
     args:
