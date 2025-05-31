@@ -20,6 +20,14 @@ import trophybot.dice as dice  # noqa: E402
 def trophybot(request):
     """Discord interactions HTTP endpoint."""
     DISCORD_PUBLIC_KEY = os.environ.get("DISCORD_PUBLIC_KEY")
+    # Debugging: log public key and incoming headers
+    print("DEBUG: DISCORD_PUBLIC_KEY =", DISCORD_PUBLIC_KEY)
+    print("DEBUG: X-Signature-Ed25519 =", request.headers.get("X-Signature-Ed25519"))
+    print(
+        "DEBUG: X-Signature-Timestamp =", request.headers.get("X-Signature-Timestamp")
+    )
+    print("DEBUG: Content-Length =", request.headers.get("Content-Length"))
+    print("DEBUG: Body snippet =", request.get_data(as_text=True)[:200])
     signature = request.headers.get("X-Signature-Ed25519")
     timestamp = request.headers.get("X-Signature-Timestamp")
     if signature is None or timestamp is None or DISCORD_PUBLIC_KEY is None:
