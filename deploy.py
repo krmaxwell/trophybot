@@ -79,9 +79,11 @@ COMMANDS = [
 def register_commands():
     """Register slash commands with Discord API."""
     if TEST_GUILD_ID:
+        print("DEBUG: TEST_GUILD_ID =", TEST_GUILD_ID)
         url = f"{BASE_URL}/applications/{APP_ID}/guilds/{TEST_GUILD_ID}/commands"
         scope = f"guild {TEST_GUILD_ID}"
     else:
+        print("DEBUG: No TEST_GUILD_ID found")
         url = f"{BASE_URL}/applications/{APP_ID}/commands"
         scope = "global"
     print(f"Registering commands ({scope}):")
