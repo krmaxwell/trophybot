@@ -120,6 +120,8 @@ def deploy_cloud_run():
         "--region",
         GCP_REGION,
         "--allow-unauthenticated",
+        "--remove-secrets",
+        "DISCORD_TOKEN,DISCORD_PUBLIC_KEY",
         "--remove-env-vars",
         "DISCORD_TOKEN,DISCORD_PUBLIC_KEY",
         "--update-secrets",
