@@ -26,7 +26,7 @@ from trophybot.bot import roll_command
                     else pytest.fail(f"Unexpected roll_pool count: {count}")
                 )
             },
-            "🎲 Light dice (3): [2, 5, 1] -> Highest: 5",
+            "Light 2 5 1 => Light 5 is highest",
         ),
         (
             "only_dark_specified",  # User issues /roll dark=D, means 0 light dice.
@@ -38,7 +38,7 @@ from trophybot.bot import roll_command
                     else pytest.fail(f"Unexpected roll_pool count: {count}")
                 )
             },
-            "🎲 Dark dice (2): [4, 1] -> Highest: 4",  # Simpler output, only dark dice
+            "Dark 4 1 => Dark 4 is highest",
         ),
         (
             "light_and_dark_light_highest",  # light=2, dark=3
@@ -57,7 +57,7 @@ from trophybot.bot import roll_command
                     )
                 ),
             },
-            "🎲 Light (2): [1, 6], Dark (3): [2, 5, 3] -> Highest: 6 (Light)",
+            "Light 1 6 Dark 2 5 3 => Light 6 is highest",
         ),
         (
             "light_and_dark_dark_highest",  # light=1, dark=2
@@ -76,7 +76,7 @@ from trophybot.bot import roll_command
                     )
                 ),
             },
-            "🎲 Light (1): [3], Dark (2): [4, 1] -> Highest: 4 (Dark)",
+            "Light 3 Dark 4 1 => Dark 4 is highest",
         ),
         (
             "light_zero_dark_gt_zero",  # light=0, dark=2
@@ -91,7 +91,8 @@ from trophybot.bot import roll_command
                     else pytest.fail(f"Unexpected roll_pool count: {count}")
                 )
             },
-            "🎲 Light (0): [], Dark (2): [4, 1] -> Highest: 4 (Dark)",
+            # If light dice are 0, they are not mentioned in the roll list
+            "Dark 4 1 => Dark 4 is highest",
         ),
         (
             "light_gt_zero_dark_zero",  # light=2, dark=0 (explicitly)
@@ -106,7 +107,8 @@ from trophybot.bot import roll_command
                     else pytest.fail(f"Unexpected roll_pool count: {count}")
                 )
             },
-            "🎲 Light dice (2): [2, 5, 1] -> Highest: 5",
+            # If dark dice are 0, they are not mentioned
+            "Light 2 5 1 => Light 5 is highest",
         ),
         (
             "light_zero_dark_zero_via_light_option",  # light=0 (dark defaults to 0)
