@@ -6,6 +6,10 @@ import sys
 import requests
 from dotenv import load_dotenv
 
+# Load .env file for local development if it exists.
+# This ensures environment variables are loaded before they are accessed by the script.
+load_dotenv()
+
 # Required env vars
 APP_ID = os.environ.get("DISCORD_APP_ID")
 BOT_TOKEN = os.environ.get("DISCORD_TOKEN")
@@ -137,8 +141,6 @@ def main():
     Load local environment variables if in development, register Discord commands,
     and deploy to Cloud Run.
     """
-    if os.environ.get("ENV", "dev") == "dev":
-        load_dotenv()
     register_commands()
     deploy_cloud_run()
 
