@@ -9,7 +9,7 @@ class _Command:
 async def _handle_single_d6_roll(interaction):
     """Handle rolling a single d6 when no options are provided."""
     result = trophybot.dice.roll_d6()
-    await interaction.response.send_message(f"🎲 You rolled: {result}")
+    return await interaction.response.send_message(f"🎲 You rolled: {result}")
 
 
 async def _handle_light_dice_roll(interaction, light_dice_count: int):
@@ -17,7 +17,7 @@ async def _handle_light_dice_roll(interaction, light_dice_count: int):
     # Precondition: light_dice_count > 0
     rolls = trophybot.dice.roll_pool(light_dice_count)
     highest = max(rolls)
-    await interaction.response.send_message(
+    return await interaction.response.send_message(
         f"Light {' '.join(map(str, rolls))} => Light {highest} is highest"
     )
 
@@ -27,7 +27,7 @@ async def _handle_dark_dice_roll(interaction, dark_dice_count: int):
     # Precondition: dark_dice_count > 0
     dark_rolls = trophybot.dice.roll_pool(dark_dice_count)
     highest_dark = max(dark_rolls)
-    await interaction.response.send_message(
+    return await interaction.response.send_message(
         f"Dark {' '.join(map(str, dark_rolls))} => Dark {highest_dark} is highest"
     )
 
@@ -63,7 +63,7 @@ async def _handle_combined_dice_roll(
     )  # dark_rolls is never empty here
 
     roll_summary_str = " ".join(message_parts)
-    await interaction.response.send_message(
+    return await interaction.response.send_message(
         f"{roll_summary_str} => {highest_roll_type} {highest_roll_val} is highest"
     )
 
@@ -79,30 +79,30 @@ async def _roll_command(interaction):
     parsed_options = {}
     if options_list:
         for opt in options_list:
-            parsed_options[opt.name] = opt.value
+            parsed_options[opt["name"]] = opt["value"]
 
     light_dice_count = parsed_options.get("light")
     dark_dice_count = parsed_options.get("dark")
 
     # Case 1: No options provided (plain /roll)
     if light_dice_count is None and dark_dice_count is None:
-        await _handle_single_d6_roll(interaction)
+        return await _handle_single_d6_roll(interaction)
     # Case 2: Light dice specified, dark dice are zero or not specified
     elif light_dice_count is not None and (
         dark_dice_count is None or dark_dice_count == 0
     ):
         if light_dice_count == 0:
-            await interaction.response.send_message("🎲 No dice rolled.")
+            return await interaction.response.send_message("🎲 No dice rolled.")
         else:  # light_dice_count > 0
-            await _handle_light_dice_roll(interaction, light_dice_count)
+            return await _handle_light_dice_roll(interaction, light_dice_count)
     # Case 3: Dark dice specified, light dice are not specified
     # (dark_dice_count must be non-None here due to previous conditions)
     elif light_dice_count is None:
         # dark_dice_count is guaranteed to be non-None here, otherwise Case 1 applies.
         if dark_dice_count == 0:
-            await interaction.response.send_message("🎲 No dice rolled.")
+            return await interaction.response.send_message("🎲 No dice rolled.")
         else:  # dark_dice_count > 0
-            await _handle_dark_dice_roll(interaction, dark_dice_count)  # type: ignore
+            return await _handle_dark_dice_roll(interaction, dark_dice_count)  # type: ignore
     # Case 4: Both light and dark dice are specified, and dark_dice_count > 0
     # (light_dice_count can be >= 0 here)
     else:
@@ -110,7 +110,11 @@ async def _roll_command(interaction):
         # - light_dice_count is not None (it's an int, could be 0)
         # - dark_dice_count is not None and dark_dice_count > 0
         #   (if dark_dice_count was 0, it would have been caught by Case 2)
-        await _handle_combined_dice_roll(interaction, light_dice_count, dark_dice_count)  # type: ignore
+        return await _handle_combined_dice_roll(
+            interaction,
+            light_dice_count,
+            dark_dice_count,  # type: ignore
+        )
 
 
 roll_command = _Command(_roll_command)

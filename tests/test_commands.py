@@ -18,7 +18,7 @@ from trophybot.bot import roll_command
         ),
         (
             "only_light_gt_1",
-            [SimpleNamespace(name="light", value=3)],
+            [{"name": "light", "value": 3}],
             {
                 "roll_pool": lambda count: (
                     [2, 5, 1]
@@ -30,7 +30,7 @@ from trophybot.bot import roll_command
         ),
         (
             "only_dark_specified",  # User issues /roll dark=D, means 0 light dice.
-            [SimpleNamespace(name="dark", value=2)],
+            [{"name": "dark", "value": 2}],
             {
                 "roll_pool": lambda count: (
                     [4, 1]
@@ -43,8 +43,8 @@ from trophybot.bot import roll_command
         (
             "light_and_dark_light_highest",  # light=2, dark=3
             [
-                SimpleNamespace(name="light", value=2),
-                SimpleNamespace(name="dark", value=3),
+                {"name": "light", "value": 2},
+                {"name": "dark", "value": 3},
             ],
             {
                 "roll_pool": lambda count: (
@@ -62,8 +62,8 @@ from trophybot.bot import roll_command
         (
             "light_and_dark_dark_highest",  # light=1, dark=2
             [
-                SimpleNamespace(name="light", value=1),
-                SimpleNamespace(name="dark", value=2),
+                {"name": "light", "value": 1},
+                {"name": "dark", "value": 2},
             ],
             {
                 "roll_pool": lambda count: (
@@ -81,8 +81,8 @@ from trophybot.bot import roll_command
         (
             "light_zero_dark_gt_zero",  # light=0, dark=2
             [
-                SimpleNamespace(name="light", value=0),
-                SimpleNamespace(name="dark", value=2),
+                {"name": "light", "value": 0},
+                {"name": "dark", "value": 2},
             ],
             {
                 "roll_pool": lambda count: (
@@ -97,8 +97,8 @@ from trophybot.bot import roll_command
         (
             "light_gt_zero_dark_zero",  # light=2, dark=0 (explicitly)
             [
-                SimpleNamespace(name="light", value=2),
-                SimpleNamespace(name="dark", value=0),
+                {"name": "light", "value": 2},
+                {"name": "dark", "value": 0},
             ],
             {
                 "roll_pool": lambda count: (
@@ -112,15 +112,15 @@ from trophybot.bot import roll_command
         ),
         (
             "light_zero_dark_zero_via_light_option",  # light=0 (dark defaults to 0)
-            [SimpleNamespace(name="light", value=0)],
+            [{"name": "light", "value": 0}],
             {},  # No dice functions should be called
             "🎲 No dice rolled.",
         ),
         (
             "light_zero_dark_zero_explicit",  # light=0, dark=0
             [
-                SimpleNamespace(name="light", value=0),
-                SimpleNamespace(name="dark", value=0),
+                {"name": "light", "value": 0},
+                {"name": "dark", "value": 0},
             ],
             {},  # No dice functions should be called
             "🎲 No dice rolled.",
