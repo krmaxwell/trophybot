@@ -125,6 +125,30 @@ from trophybot.bot import roll_command
             {},  # No dice functions should be called
             "🎲 No dice rolled.",
         ),
+        (
+            "light_and_dark_tie_dark_wins",  # light=2, dark=2, highest of each is 5
+            [
+                {"name": "light", "value": 2},
+                {"name": "dark", "value": 2},
+            ],
+            {
+                # This creates a stateful mock. The outer lambda is immediately called,
+                # returning the inner lambda. The inner lambda closes over
+                # 'rolls_to_return'.  It expects two calls with count=2, returning
+                # predefined rolls.
+                "roll_pool": (
+                    lambda rolls_to_return=[[5, 1], [2, 5]]: lambda count_param: (
+                        rolls_to_return.pop(0)
+                        if count_param == 2 and rolls_to_return
+                        else pytest.fail(
+                            f"Unexpected roll_pool count: {count_param} or too many calls"  # noqa E501
+                        )
+                    )
+                )(),
+            },
+            # Expected: Dark 5 wins due to tie-breaking rule
+            "Light 5 1 Dark 2 5 => Dark 5 is highest",
+        ),
     ],
     ids=[
         "no_options_single_d6",
@@ -136,6 +160,7 @@ from trophybot.bot import roll_command
         "light_gt_zero_dark_zero",
         "light_zero_dark_zero_via_light_option",
         "light_zero_dark_zero_explicit",
+        "light_and_dark_tie_dark_wins",
     ],
 )
 async def test_roll_command_scenarios(
@@ -152,6 +177,11 @@ async def test_roll_command_scenarios(
 
     responses = []
 
+    # We need to reset responses for each parameterized test run,
+    # especially for mocks that depend on call order/count like the new tie test.
+    # The `responses` list is captured by `fake_send_message` closure.
+    # A more robust way for call order dependent mocks might involve a class-based mock
+    # or a more sophisticated counter, but for now, checking len(responses) works.
     async def fake_send_message(message):
         responses.append(message)
 

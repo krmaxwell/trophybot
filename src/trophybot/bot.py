@@ -53,7 +53,11 @@ async def _handle_combined_dice_roll(
     all_rolls_tagged.extend([(roll, "Dark") for roll in dark_rolls])
 
     # Since dark_rolls is non-empty, all_rolls_tagged will be non-empty.
-    highest_roll_val, highest_roll_type = max(all_rolls_tagged, key=lambda x: x[0])
+    # To handle ties where dark dice win, we use a tuple as the key for max().
+    # The 1st element is the roll value, the 2nd is a preference score (Dark > Light)
+    highest_roll_val, highest_roll_type = max(
+        all_rolls_tagged, key=lambda x: (x[0], 1 if x[1] == "Dark" else 0)
+    )
 
     message_parts = []
     if light_rolls:  # True if light_dice_count > 0
