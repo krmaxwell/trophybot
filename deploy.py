@@ -36,7 +36,7 @@ COMMANDS = [
         "options": [
             {
                 "name": "light",
-                "description": "Number of light dice (default 1)",
+                "description": "Number of light dice",
                 "type": 4,  # INTEGER
                 "required": False,
             },
