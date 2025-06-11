@@ -138,3 +138,57 @@ async def _roll_command(interaction):
 
 roll_command = _Command(_roll_command)
 
+
+def _parse_combat_options(options_list):
+    """Return a dict with dark dice count and endurance parsed from options."""
+    parsed: dict[str, int] = {}
+    for opt in options_list or []:
+        name = opt["name"]
+        value = opt["value"]
+        if name in {"dark", "endurance"}:
+            parsed[name] = value
+    return parsed
+
+
+async def _combat_command(interaction):
+    """Handle the /combat endurance test."""
+    options = (
+        interaction.data.options
+        if hasattr(interaction.data, "options") and interaction.data.options is not None
+        else []
+    )
+
+    parsed_options = _parse_combat_options(options)
+
+    dark_dice_count = parsed_options.get("dark")
+    endurance_value = parsed_options.get("endurance")
+
+    if dark_dice_count is None or endurance_value is None:
+        return await interaction.response.send_message("Invalid options.")
+
+    rolls = trophybot.dice.roll_pool(dark_dice_count)
+    sorted_rolls = sorted(rolls, reverse=True)
+    top_two = sorted_rolls[:2]
+    total = sum(top_two)
+
+    top_two_sorted = sorted(top_two)
+    if len(top_two_sorted) == 1:
+        top_line = f"Top 1: {top_two_sorted[0]} = {total}"
+    else:
+        top_line = f"Top 2: {top_two_sorted[0]}+{top_two_sorted[1]} = {total}"
+
+    success = total >= endurance_value
+    outcome = "Success" if success else "Failure"
+    comparator = ">=" if success else "<"
+
+    message = (
+        f"Dice: {' '.join(map(str, rolls))}\n"
+        f"{top_line}\n"
+        f"Outcome: {outcome} ({comparator} {endurance_value})\n"
+        "If any die matches your weak point, mark Ruin"
+    )
+
+    return await interaction.response.send_message(message)
+
+
+combat_command = _Command(_combat_command)

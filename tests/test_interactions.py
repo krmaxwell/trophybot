@@ -98,3 +98,31 @@ def test_roll_endpoint_with_light_and_dark_options(client, monkeypatch):
     assert data["type"] == 4
     expected_content = "Light 1 6 Dark 2 5 3 => Light 6 is highest"
     assert data["data"]["content"] == expected_content
+
+
+def test_combat_endpoint(client, monkeypatch):
+    monkeypatch.setattr("trophybot.dice.roll_pool", lambda count: [2, 3, 5])
+
+    payload_data = {
+        "type": 2,
+        "data": {
+            "name": "combat",
+            "options": [
+                {"name": "dark", "value": 3},
+                {"name": "endurance", "value": 9},
+            ],
+        },
+    }
+    body = json.dumps(payload_data).encode()
+    resp = client.post("/", data=body, headers=make_headers(body))
+
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["type"] == 4
+    expected_content = (
+        "Dice: 2 3 5\n"
+        "Top 2: 3+5 = 8\n"
+        "Outcome: Failure (< 9)\n"
+        "If any die matches your weak point, mark Ruin"
+    )
+    assert data["data"]["content"] == expected_content
