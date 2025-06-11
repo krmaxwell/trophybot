@@ -26,12 +26,11 @@ trophybot is a Discord dice roller for the Trophy RPG.
 
 Use the following slash commands in Discord:
 
-- `/roll [light] [dark]`
-  - if issued just as `/roll`, it rolls one d6 and reports the result
-  - if issued as `/roll [light]` (e.g. `/roll 2`), it rolls that many light-type d6s and reports all dice rolls, then indicates the highest
-  - if issued as `/roll [dark]` (e.g. `/roll 3`), it rolls that many dark-type d6s and reports all dice rolls, then indicates the highest
-  - if issued as `/roll [light] [dark]` (e.g. `/roll light=2 dark=3`), it rolls that many light-type and dark-type d6s, shows all results grouped by color, and indicates the highest die and its color (e.g., "Light 1 5 Dark 3 4 6 => Dark 6 is highest"). Per the rules, if there is a tie between the highest light and dark dice, the dark die wins
-  - you can also simply type `/roll 2 3` as plain text; it will be treated the same as `/roll light:2 dark:3`
+- `/roll [input]`
+  - `input` is optional text that may contain zero, one, or two digits
+  - with no digits (plain `/roll`), a single die is rolled and the result reported
+  - with one digit (e.g. `/roll 3`), that many dice are rolled, all results are listed, and the highest die is noted
+  - with two digits (e.g. `/roll 2 3`), two pools are rolled – the first is "light" and the second "dark" – and the highest die and its colour are reported (dark wins any ties)
 
 ## Cloud Run Deployment
 
