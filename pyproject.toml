@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "trophybot"
-version = "0.3.0"
+version = "0.4.0"
 description = "Discord dice roller for Trophy"
 authors = ["Kyle Maxwell <kylemxl@icloud.com>"]
 packages = [{ include = "trophybot", from = "src" }]
