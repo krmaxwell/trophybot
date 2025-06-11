@@ -46,6 +46,12 @@ COMMANDS = [
                 "type": 4,  # INTEGER
                 "required": False,
             },
+            {
+                "name": "text",
+                "description": "Plain text input like '2 3'",
+                "type": 3,  # STRING
+                "required": False,
+            },
         ],
     },
     {

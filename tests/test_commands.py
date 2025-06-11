@@ -177,6 +177,25 @@ from trophybot.bot import roll_command
             },
             "Light 2 5 1 => Light 5 is highest",
         ),
+        (
+            "numbers_in_name",
+            [
+                {"name": "2", "value": ""},
+                {"name": "3", "value": ""},
+            ],
+            {
+                "roll_pool": lambda count: (
+                    [1, 6]
+                    if count == 2
+                    else (
+                        [2, 4, 5]
+                        if count == 3
+                        else pytest.fail(f"Unexpected roll_pool count: {count}")
+                    )
+                )
+            },
+            "Light 1 6 Dark 2 4 5 => Light 6 is highest",
+        ),
     ],
     ids=[
         "no_options_single_d6",
@@ -191,6 +210,7 @@ from trophybot.bot import roll_command
         "light_and_dark_tie_dark_wins",
         "plain_text_two_numbers",
         "plain_text_one_number",
+        "numbers_in_name",
     ],
 )
 async def test_roll_command_scenarios(
