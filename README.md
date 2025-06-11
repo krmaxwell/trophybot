@@ -47,4 +47,4 @@ gcloud run deploy trophybot \
   --port 8080
 ```
 
-This deploys `main.py` as an HTTP endpoint on Cloud Run, verifying request signatures and handling `/roll_d6` commands.
+This deploys `main.py` as an HTTP endpoint on Cloud Run, verifying request signatures and handling `/roll` commands.
