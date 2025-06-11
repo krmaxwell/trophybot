@@ -36,5 +36,3 @@ extend-ignore = ["D100", "D205"]         # e.g. skip missing docstring for modul
 exclude = ["build/", "docs/"]    
 per-file-ignores = { "tests/*" = ["D", "S101"] }      # relax docstring & security in tests
 
-[tool.poetry.scripts]
-trophybot = "trophybot.bot:main"
