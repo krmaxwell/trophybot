@@ -1,4 +1,5 @@
 import re
+
 import trophybot.dice
 
 
@@ -24,9 +25,7 @@ async def _handle_pool_roll(interaction, count: int):
     )
 
 
-async def _handle_light_dark_roll(
-    interaction, light_count: int, dark_count: int
-):
+async def _handle_light_dark_roll(interaction, light_count: int, dark_count: int):
     """Roll light and dark dice pools and report the highest with tie-breaking."""
     if light_count <= 0 and dark_count <= 0:
         return await interaction.response.send_message("No dice rolled.")
@@ -34,9 +33,7 @@ async def _handle_light_dark_roll(
     light_rolls = trophybot.dice.roll_pool(light_count) if light_count > 0 else []
     dark_rolls = trophybot.dice.roll_pool(dark_count) if dark_count > 0 else []
 
-    tagged = [(r, "Light") for r in light_rolls] + [
-        (r, "Dark") for r in dark_rolls
-    ]
+    tagged = [(r, "Light") for r in light_rolls] + [(r, "Dark") for r in dark_rolls]
 
     highest_val, highest_type = max(
         tagged, key=lambda x: (x[0], 1 if x[1] == "Dark" else 0)
@@ -67,7 +64,7 @@ def _extract_digits(options_list):
 
 
 async def _roll_command(interaction):
-    """Generic /roll command using a single text input option."""
+    """Handle the generic /roll command using a single text input option."""
     options = (
         interaction.data.options
         if hasattr(interaction.data, "options") and interaction.data.options is not None

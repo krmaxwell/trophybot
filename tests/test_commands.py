@@ -12,14 +12,22 @@ from trophybot.bot import roll_command
         ([], {"roll_d6": lambda: 4}, "Die roll: 4"),
         (
             [{"name": "input", "value": "3"}],
-            {"roll_pool": lambda count: [3, 5, 2] if count == 3 else pytest.fail(f"Unexpected {count}")},
+            {
+                "roll_pool": lambda c: (
+                    [3, 5, 2] if c == 3 else pytest.fail(f"Unexpected {c}")
+                )
+            },
             "Dice rolls: 3 5 2 => Highest 5",
         ),
         (
             [{"name": "input", "value": "2 3"}],
             {
                 "roll_pool": (
-                    lambda rolls=[[2, 4], [2, 1, 4]]: lambda c: rolls.pop(0) if (c == 2 and len(rolls) == 2) or (c == 3 and len(rolls) == 1) else pytest.fail(f"Unexpected {c}")
+                    lambda rolls=[[2, 4], [2, 1, 4]]: lambda c: (
+                        rolls.pop(0)
+                        if (c == 2 and len(rolls) == 2) or (c == 3 and len(rolls) == 1)
+                        else pytest.fail(f"Unexpected {c}")
+                    )
                 )(),
             },
             "Light rolls: 2 4 Dark rolls: 2 1 4 => Highest Dark 4",
