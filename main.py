@@ -15,7 +15,7 @@ app = Flask(__name__)
 # Allow importing trophybot package from src directory.
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
-from trophybot.bot import roll_command  # noqa: E402
+from trophybot.bot import combat_command, roll_command  # noqa: E402
 
 
 def _verify_discord_request(current_request):
@@ -95,6 +95,9 @@ async def _handle_application_command(payload):
     if name == "roll":
         print("DEBUG: Routing to roll_command.callback")
         return await roll_command.callback(fake_interaction_obj)
+    if name == "combat":
+        print("DEBUG: Routing to combat_command.callback")
+        return await combat_command.callback(fake_interaction_obj)
 
     print(f"DEBUG: Unknown command: {name}")
     return {"type": 4, "data": {"content": f"Unknown command: {name}"}}
