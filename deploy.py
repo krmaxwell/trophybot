@@ -137,6 +137,36 @@ def _delete_stale_commands(
                 )
 
 
+def _delete_all_commands(
+    existing_commands: list,
+    base_delete_url: str,
+    headers: dict,
+):
+    """Delete all commands from Discord for a clean guild slate."""
+    if existing_commands:
+        print(f"Deleting all {len(existing_commands)} command(s)...")
+        for cmd in existing_commands:
+            delete_url = f"{base_delete_url}/{cmd['id']}"
+            cmd_name = cmd.get("name", "Unknown Command")
+            cmd_id = cmd.get("id", "Unknown ID")
+            print(f"  Deleting '{cmd_name}' (ID: {cmd_id})...")
+            try:
+                del_resp = requests.delete(delete_url, headers=headers)
+                if del_resp.status_code == 204:
+                    print(f"    ✓ Deleted '{cmd_name}'")
+                else:
+                    err = f"{del_resp.status_code} {del_resp.text}"
+                    print(
+                        f"    ✗ Error deleting '{cmd_name}': {err}",
+                        file=sys.stderr,
+                    )
+            except requests.exceptions.RequestException as e:
+                print(
+                    f"    ✗ Exception deleting '{cmd_name}': {e}",
+                    file=sys.stderr,
+                )
+
+
 def _register_new_or_update_defined_commands(
     commands_to_register: list, registration_url: str, headers: dict
 ) -> list:
@@ -179,7 +209,10 @@ def register_commands():
     existing_commands = _fetch_existing_commands(url, HEADERS, scope)
 
     current_command_names = {cmd["name"] for cmd in COMMANDS}
-    _delete_stale_commands(existing_commands, current_command_names, url, HEADERS)
+    if TEST_GUILD_ID:
+        _delete_all_commands(existing_commands, url, HEADERS)
+    else:
+        _delete_stale_commands(existing_commands, current_command_names, url, HEADERS)
 
     failures = _register_new_or_update_defined_commands(COMMANDS, url, HEADERS)
 
