@@ -72,18 +72,44 @@ async def _handle_combined_dice_roll(
     )
 
 
+def _parse_roll_options(options_list):
+    """Return a dict with light/dark counts parsed from options."""
+    parsed: dict[str, int] = {}
+    extra_numbers: list[int] = []
+
+    for opt in options_list or []:
+        name = opt.get("name")
+        value = opt.get("value")
+
+        if name in {"light", "dark"}:
+            parsed[name] = value
+            continue
+
+        text_parts: list[str] = []
+        if isinstance(value, str):
+            text_parts.extend(value.split())
+        if isinstance(name, str):
+            text_parts.extend(name.split())
+
+        extra_numbers.extend(int(t) for t in text_parts if t.isdigit())
+
+    if "light" not in parsed and extra_numbers:
+        parsed["light"] = extra_numbers.pop(0)
+    if "dark" not in parsed and extra_numbers:
+        parsed["dark"] = extra_numbers.pop(0)
+
+    return parsed
+
+
 async def _roll_command(interaction):
     """Roll a d6 or pool as the generic /roll command."""
-    options_list = (
+    options = (
         interaction.data.options
         if hasattr(interaction.data, "options") and interaction.data.options is not None
         else []
     )
 
-    parsed_options = {}
-    if options_list:
-        for opt in options_list:
-            parsed_options[opt["name"]] = opt["value"]
+    parsed_options = _parse_roll_options(options)
 
     light_dice_count = parsed_options.get("light")
     dark_dice_count = parsed_options.get("dark")

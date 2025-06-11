@@ -31,6 +31,7 @@ Use the following slash commands in Discord:
   - if issued as `/roll [light]` (e.g. `/roll 2`), it rolls that many light-type d6s and reports all dice rolls, then indicates the highest
   - if issued as `/roll [dark]` (e.g. `/roll 3`), it rolls that many dark-type d6s and reports all dice rolls, then indicates the highest
   - if issued as `/roll [light] [dark]` (e.g. `/roll light=2 dark=3`), it rolls that many light-type and dark-type d6s, shows all results grouped by color, and indicates the highest die and its color (e.g., "Light 1 5 Dark 3 4 6 => Dark 6 is highest"). Per the rules, if there is a tie between the highest light and dark dice, the dark die wins
+  - you can also simply type `/roll 2 3` as plain text; it will be treated the same as `/roll light:2 dark:3`
 
 ## Cloud Run Deployment
 
