@@ -35,23 +35,11 @@ COMMANDS = [
         "description": "Roll a six-sided die or pool",
         "options": [
             {
-                "name": "light",
-                "description": "Number of light dice",
-                "type": 4,  # INTEGER
-                "required": False,
-            },
-            {
-                "name": "dark",
-                "description": "Number of dark dice (default 0)",
-                "type": 4,  # INTEGER
-                "required": False,
-            },
-            {
-                "name": "text",
-                "description": "Plain text input like '2 3'",
+                "name": "input",
+                "description": "Text containing zero, one or two digits",
                 "type": 3,  # STRING
                 "required": False,
-            },
+            }
         ],
     },
     {
