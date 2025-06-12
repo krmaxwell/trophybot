@@ -241,6 +241,8 @@ def deploy_cloud_run():
         "DISCORD_TOKEN=discord-token:latest",
         "--update-secrets",
         "DISCORD_PUBLIC_KEY=discord-pubkey:latest",
+        "--update-secrets",
+        "TEST_GUILD_ID=test-guild-id:latest",
     ]
     print("Deploying to Cloud Run:")
     print(" ".join(deploy_cmd))

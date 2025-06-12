@@ -41,7 +41,8 @@ steps:
           --region $_REGION \
           --allow-unauthenticated \
           --update-secrets DISCORD_TOKEN=discord-token:latest \
-          --update-secrets DISCORD_PUBLIC_KEY=discord-pubkey:latest
+          --update-secrets DISCORD_PUBLIC_KEY=discord-pubkey:latest \
+          --update-secrets TEST_GUILD_ID=test-guild-id:latest
 
 # Specify variables (Cloud Build UI will prompt)
 substitutions:
