@@ -63,3 +63,4 @@ trophybot is a Discord dice roller bot for the Trophy RPG system. It's deployed 
 - **Type checking**: MyPy enabled
 - **Pre-commit hooks**: Available for automated quality checks
 - **Security**: Uses PyNaCl for Discord signature verification
+- All commits must pass Ruff

@@ -3,6 +3,7 @@ import sys
 import time
 from types import SimpleNamespace
 
+import requests
 from dotenv import load_dotenv
 from flask import Flask, request
 from nacl.exceptions import BadSignatureError
@@ -16,6 +17,40 @@ app = Flask(__name__)
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
 from trophybot.bot import combat_command, roll_command  # noqa: E402
+
+# Define slash commands that should be registered with Discord
+COMMANDS = [
+    {
+        "name": "roll",
+        "description": "Roll a six-sided die or pool",
+        "options": [
+            {
+                "name": "input",
+                "description": "Text containing zero, one or two digits",
+                "type": 3,  # STRING
+                "required": False,
+            }
+        ],
+    },
+    {
+        "name": "combat",
+        "description": "Trophy Gold endurance test",
+        "options": [
+            {
+                "name": "dark",
+                "description": "Number of dark dice",
+                "type": 4,  # INTEGER
+                "required": True,
+            },
+            {
+                "name": "endurance",
+                "description": "Monster endurance value",
+                "type": 4,  # INTEGER
+                "required": True,
+            },
+        ],
+    },
+]
 
 
 def _verify_discord_request(current_request):
@@ -133,6 +168,66 @@ async def interactions():  # Made async
     return {}
 
 
+def _register_commands_if_needed():
+    """Register slash commands with Discord if not already registered."""
+    app_id = os.environ.get("DISCORD_APP_ID")
+    bot_token = os.environ.get("DISCORD_TOKEN")
+
+    # Skip command registration if required env vars are missing
+    if not app_id or not bot_token:
+        print(
+            "INFO: Skipping command registration - "
+            "DISCORD_APP_ID or DISCORD_TOKEN not set"
+        )
+        return
+
+    base_url = "https://discord.com/api/v10"
+    headers = {"Authorization": f"Bot {bot_token}", "Content-Type": "application/json"}
+
+    # Use guild commands for faster registration in development
+    test_guild_id = os.environ.get("TEST_GUILD_ID")
+    if test_guild_id:
+        url = f"{base_url}/applications/{app_id}/guilds/{test_guild_id}/commands"
+        scope = "guild"
+    else:
+        url = f"{base_url}/applications/{app_id}/commands"
+        scope = "global"
+
+    try:
+        print(f"INFO: Checking {scope} command registration...")
+
+        # Get existing commands
+        resp = requests.get(url, headers=headers, timeout=30)
+        resp.raise_for_status()
+        existing_commands = resp.json()
+
+        existing_names = {cmd.get("name") for cmd in existing_commands}
+
+        # Register missing commands
+        missing_commands = [
+            cmd for cmd in COMMANDS if cmd["name"] not in existing_names
+        ]
+
+        if missing_commands:
+            print(f"INFO: Registering {len(missing_commands)} missing command(s)...")
+            for cmd in missing_commands:
+                resp = requests.post(url, headers=headers, json=cmd, timeout=30)
+                if resp.status_code in (200, 201):
+                    print(f"INFO: Registered /{cmd['name']} command")
+                else:
+                    print(
+                        f"WARNING: Failed to register /{cmd['name']}: "
+                        f"{resp.status_code} {resp.text}"
+                    )
+        else:
+            print("INFO: All commands already registered")
+
+    except Exception as e:
+        print(f"WARNING: Command registration failed: {e}")
+        print("INFO: App will still start, but commands may not work")
+
+
 if __name__ == "__main__":
+    _register_commands_if_needed()
     port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
