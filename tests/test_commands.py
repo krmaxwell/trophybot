@@ -52,3 +52,71 @@ async def test_roll_command(options_data, dice_mocks, expected, monkeypatch):
 
     await roll_command.callback(fake_interaction)
     assert responses == [expected]
+
+
+@pytest.mark.asyncio
+async def test_roll_light_3_string_input_should_use_light_dark_format():
+    """Test that '/roll input:"light 3"' should show light/dark format."""
+    responses = []
+
+    async def fake_send(msg):
+        responses.append(msg)
+
+    fake_interaction = SimpleNamespace(
+        response=SimpleNamespace(send_message=fake_send),
+        data=SimpleNamespace(options=[{"name": "input", "value": "light 3"}]),
+    )
+
+    def mock_roll_pool(count):
+        if count == 3:
+            return [1, 4, 2]
+        return []
+
+    import trophybot.dice
+
+    original_roll_pool = trophybot.dice.roll_pool
+    trophybot.dice.roll_pool = mock_roll_pool
+
+    try:
+        await roll_command.callback(fake_interaction)
+
+        # This test shows what SHOULD happen (and will currently fail)
+        actual_response = responses[0]
+        assert actual_response == "Light rolls: 1 4 2 => Highest Light 4"
+
+    finally:
+        trophybot.dice.roll_pool = original_roll_pool
+
+
+@pytest.mark.asyncio
+async def test_roll_light_parameter_should_work():
+    """Test that '/roll light:3' should work using separate parameters."""
+    responses = []
+
+    async def fake_send(msg):
+        responses.append(msg)
+
+    fake_interaction = SimpleNamespace(
+        response=SimpleNamespace(send_message=fake_send),
+        data=SimpleNamespace(options=[{"name": "light", "value": 3}]),
+    )
+
+    def mock_roll_pool(count):
+        if count == 3:
+            return [1, 4, 2]
+        return []
+
+    import trophybot.dice
+
+    original_roll_pool = trophybot.dice.roll_pool
+    trophybot.dice.roll_pool = mock_roll_pool
+
+    try:
+        await roll_command.callback(fake_interaction)
+
+        # This test shows what SHOULD happen (and will currently fail)
+        actual_response = responses[0]
+        assert actual_response == "Light rolls: 1 4 2 => Highest Light 4"
+
+    finally:
+        trophybot.dice.roll_pool = original_roll_pool

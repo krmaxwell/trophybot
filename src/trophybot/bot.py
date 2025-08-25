@@ -49,8 +49,8 @@ async def _handle_light_dark_roll(interaction, light_count: int, dark_count: int
     return await interaction.response.send_message(message)
 
 
-def _extract_digits(options_list):
-    """Return a list of digits found in the 'input' option string."""
+def _parse_input(options_list):
+    """Parse input option and return (light_count, dark_count) or digits list."""
     input_text = ""
     for opt in options_list or []:
         if opt.get("name") == "input":
@@ -60,6 +60,41 @@ def _extract_digits(options_list):
             else:
                 input_text = str(value)
             break
+
+    if not input_text:
+        return []
+
+    # Check for light/dark keywords
+    input_lower = input_text.lower().strip()
+
+    # Handle "light X" format
+    light_match = re.match(r"light\s+(\d+)", input_lower)
+    if light_match:
+        return ("light_dark", int(light_match.group(1)), 0)
+
+    # Handle "dark X" format
+    dark_match = re.match(r"dark\s+(\d+)", input_lower)
+    if dark_match:
+        return ("light_dark", 0, int(dark_match.group(1)))
+
+    # Handle "light X dark Y" or "dark Y light X" format
+    light_dark_match = re.match(r"light\s+(\d+)\s+dark\s+(\d+)", input_lower)
+    if light_dark_match:
+        return (
+            "light_dark",
+            int(light_dark_match.group(1)),
+            int(light_dark_match.group(2)),
+        )
+
+    dark_light_match = re.match(r"dark\s+(\d+)\s+light\s+(\d+)", input_lower)
+    if dark_light_match:
+        return (
+            "light_dark",
+            int(dark_light_match.group(2)),
+            int(dark_light_match.group(1)),
+        )
+
+    # Fallback: extract digits only (original behavior)
     return [int(d) for d in re.findall(r"\d", input_text)]
 
 
@@ -71,7 +106,31 @@ async def _roll_command(interaction):
         else []
     )
 
-    digits = _extract_digits(options)
+    # Check for separate light/dark parameters first
+    light_count = None
+    dark_count = None
+
+    for opt in options:
+        if opt.get("name") == "light":
+            light_count = opt.get("value", 0)
+        elif opt.get("name") == "dark":
+            dark_count = opt.get("value", 0)
+
+    # If we have light or dark parameters, use light/dark logic
+    if light_count is not None or dark_count is not None:
+        light_count = light_count if light_count is not None else 0
+        dark_count = dark_count if dark_count is not None else 0
+        return await _handle_light_dark_roll(interaction, light_count, dark_count)
+
+    # Otherwise, parse the input parameter
+    parsed = _parse_input(options)
+
+    # Check if it's light/dark format from input string
+    if isinstance(parsed, tuple) and len(parsed) == 3 and parsed[0] == "light_dark":
+        return await _handle_light_dark_roll(interaction, parsed[1], parsed[2])
+
+    # Otherwise, it's the original digits-only format
+    digits = parsed if isinstance(parsed, list) else []
 
     if len(digits) == 0:
         return await _handle_single_d6_roll(interaction)
