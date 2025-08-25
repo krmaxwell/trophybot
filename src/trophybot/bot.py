@@ -1,5 +1,5 @@
 import re
-from typing import Any, List, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union
 
 import trophybot.dice
 
@@ -50,6 +50,20 @@ async def _handle_light_dark_roll(interaction, light_count: int, dark_count: int
     return await interaction.response.send_message(message)
 
 
+def _parse_light_dark_input(text: str) -> Optional[Tuple[int, int]]:
+    """Parse 'light X dark Y' format in any order."""
+    words = text.lower().split()
+    light_count, dark_count = 0, 0
+
+    for i, word in enumerate(words):
+        if word == "light" and i + 1 < len(words) and words[i + 1].isdigit():
+            light_count = int(words[i + 1])
+        elif word == "dark" and i + 1 < len(words) and words[i + 1].isdigit():
+            dark_count = int(words[i + 1])
+
+    return light_count, dark_count
+
+
 def _parse_input(options_list: List[dict]) -> Union[List[int], Tuple[str, int, int]]:
     """Parse input option and return (light_count, dark_count) or digits list."""
     input_text = ""
@@ -65,35 +79,10 @@ def _parse_input(options_list: List[dict]) -> Union[List[int], Tuple[str, int, i
     if not input_text:
         return []
 
-    # Check for light/dark keywords
-    input_lower = input_text.lower().strip()
-
-    # Handle "light X" format
-    light_match = re.match(r"light\s+(\d+)", input_lower)
-    if light_match:
-        return ("light_dark", int(light_match.group(1)), 0)
-
-    # Handle "dark X" format
-    dark_match = re.match(r"dark\s+(\d+)", input_lower)
-    if dark_match:
-        return ("light_dark", 0, int(dark_match.group(1)))
-
-    # Handle "light X dark Y" or "dark Y light X" format
-    light_dark_match = re.match(r"light\s+(\d+)\s+dark\s+(\d+)", input_lower)
-    if light_dark_match:
-        return (
-            "light_dark",
-            int(light_dark_match.group(1)),
-            int(light_dark_match.group(2)),
-        )
-
-    dark_light_match = re.match(r"dark\s+(\d+)\s+light\s+(\d+)", input_lower)
-    if dark_light_match:
-        return (
-            "light_dark",
-            int(dark_light_match.group(2)),
-            int(dark_light_match.group(1)),
-        )
+    # Check for light/dark keywords using the new parser
+    light_dark_result = _parse_light_dark_input(input_text)
+    if light_dark_result and (light_dark_result[0] > 0 or light_dark_result[1] > 0):
+        return ("light_dark", light_dark_result[0], light_dark_result[1])
 
     # Fallback: extract digits only (original behavior)
     return [int(d) for d in re.findall(r"\d", input_text)]
