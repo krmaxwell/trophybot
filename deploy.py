@@ -79,7 +79,7 @@ def _fetch_existing_commands(url: str, headers: dict, scope_description: str) ->
     """Fetch existing slash commands from the Discord API for a given scope."""
     print(f"Fetching existing {scope_description} commands...")
     try:
-        get_resp = requests.get(url, headers=headers)
+        get_resp = requests.get(url, headers=headers, timeout=30)
         get_resp.raise_for_status()  # Raise an exception for HTTP errors
         existing_commands = get_resp.json()
         if not isinstance(existing_commands, list):
@@ -122,7 +122,7 @@ def _delete_stale_commands(
             cmd_id = cmd_to_delete.get("id", "Unknown ID")
             print(f"  Deleting '{cmd_name}' (ID: {cmd_id})...")
             try:
-                del_resp = requests.delete(delete_url, headers=headers)
+                del_resp = requests.delete(delete_url, headers=headers, timeout=30)
                 if del_resp.status_code == 204:  # No Content on success
                     print(f"    ✓ Deleted '{cmd_name}'")
                 else:
@@ -151,7 +151,7 @@ def _delete_all_commands(
             cmd_id = cmd.get("id", "Unknown ID")
             print(f"  Deleting '{cmd_name}' (ID: {cmd_id})...")
             try:
-                del_resp = requests.delete(delete_url, headers=headers)
+                del_resp = requests.delete(delete_url, headers=headers, timeout=30)
                 if del_resp.status_code == 204:
                     print(f"    ✓ Deleted '{cmd_name}'")
                 else:
@@ -177,7 +177,9 @@ def _register_new_or_update_defined_commands(
     failures = []
     for cmd_definition in commands_to_register:
         try:
-            resp = requests.post(registration_url, headers=headers, json=cmd_definition)
+            resp = requests.post(
+                registration_url, headers=headers, json=cmd_definition, timeout=30
+            )
             if resp.status_code in (200, 201):  # OK or Created
                 print(f"  ✓ {cmd_definition['name']}")
             else:
