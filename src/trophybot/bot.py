@@ -1,4 +1,5 @@
 import re
+from typing import Any, List, Tuple, Union
 
 import trophybot.dice
 
@@ -49,7 +50,7 @@ async def _handle_light_dark_roll(interaction, light_count: int, dark_count: int
     return await interaction.response.send_message(message)
 
 
-def _parse_input(options_list):
+def _parse_input(options_list: List[dict]) -> Union[List[int], Tuple[str, int, int]]:
     """Parse input option and return (light_count, dark_count) or digits list."""
     input_text = ""
     for opt in options_list or []:
@@ -98,7 +99,7 @@ def _parse_input(options_list):
     return [int(d) for d in re.findall(r"\d", input_text)]
 
 
-async def _roll_command(interaction):
+async def _roll_command(interaction: Any) -> Any:
     """Handle the generic /roll command using a single text input option."""
     options = (
         interaction.data.options
