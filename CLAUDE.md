@@ -76,6 +76,27 @@ Follow proper TDD practices when implementing new features:
 3. **Refactor with confidence**: Improve code while keeping tests green
 4. **Never write tests that pass for broken behavior**: Avoid tests with commented assertions or tests that assert incorrect behavior
 
+#### Key TDD Principles
+
+**Test correct behavior, not incorrect behavior:**
+- ✅ `assert result == expected_correct_value`
+- ❌ `assert result == current_broken_value`
+
+**Focus on valuable tests that prevent regressions:**
+- Test business logic and user-facing behavior
+- Test error handling and edge cases
+- Avoid testing implementation details or configuration mechanisms
+
+**Verify bugs exist before writing tests:**
+- Investigate thoroughly to confirm issues are real bugs
+- Don't write tests based on assumptions or incomplete analysis
+- Remove or update issue lists when bugs are found to be non-existent
+
+**Keep tests simple and focused:**
+- One assertion per test when possible
+- Avoid complex test setup or module reloading
+- Test the contract/interface, not the implementation
+
 **Example of good TDD practice:**
 ```python
 def test_roll_light_3_should_use_light_dark_format():
@@ -84,12 +105,16 @@ def test_roll_light_3_should_use_light_dark_format():
     assert actual_response == "Light rolls: 1 4 2 => Highest Light 4"
 ```
 
-**Avoid this anti-pattern:**
+**Avoid these anti-patterns:**
 ```python
 def test_current_broken_behavior():
     # This test passes but validates incorrect behavior
     assert actual_response == "Dice rolls: 1 4 2 => Highest 4"
     # assert actual_response == "Light rolls: 1 4 2 => Highest Light 4"  # commented out
+
+def test_hardcoded_version_exists():
+    # Testing that bad behavior exists is not valuable
+    assert BASE_URL.endswith("/v10"), "Version is hardcoded"
 ```
 
 ### Type Safety
