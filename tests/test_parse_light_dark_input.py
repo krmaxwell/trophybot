@@ -88,9 +88,9 @@ def test_parse_number_before_keyword():
 
 
 def test_parse_multiple_light_dark():
-    """Should handle multiple light/dark keywords (last one wins)."""
+    """Should reject input with multiple light/dark keywords as ambiguous."""
     result = _parse_light_dark_input("light 1 dark 2 light 3 dark 4")
-    assert result == (3, 4)
+    assert result == (0, 0)  # Ambiguous input should be rejected
 
 
 def test_parse_large_numbers():

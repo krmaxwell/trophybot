@@ -52,16 +52,43 @@ async def _handle_light_dark_roll(interaction, light_count: int, dark_count: int
 
 def _parse_light_dark_input(text: str) -> Optional[Tuple[int, int]]:
     """Parse 'light X dark Y' format in any order."""
+    if text is None:
+        return (0, 0)
+
     words = text.lower().split()
-    light_count, dark_count = 0, 0
 
-    for i, word in enumerate(words):
-        if word == "light" and i + 1 < len(words) and words[i + 1].isdigit():
-            light_count = int(words[i + 1])
-        elif word == "dark" and i + 1 < len(words) and words[i + 1].isdigit():
-            dark_count = int(words[i + 1])
+    # Valid patterns: "light N", "dark N", "light M dark N", "dark M light N"
 
-    return light_count, dark_count
+    # Pattern 1: "light N" (exactly 2 words)
+    if len(words) == 2 and words[0] == "light" and words[1].isdigit():
+        return (int(words[1]), 0)
+
+    # Pattern 2: "dark N" (exactly 2 words)
+    if len(words) == 2 and words[0] == "dark" and words[1].isdigit():
+        return (0, int(words[1]))
+
+    # Pattern 3: "light M dark N" (exactly 4 words)
+    if (
+        len(words) == 4
+        and words[0] == "light"
+        and words[1].isdigit()
+        and words[2] == "dark"
+        and words[3].isdigit()
+    ):
+        return (int(words[1]), int(words[3]))
+
+    # Pattern 4: "dark M light N" (exactly 4 words)
+    if (
+        len(words) == 4
+        and words[0] == "dark"
+        and words[1].isdigit()
+        and words[2] == "light"
+        and words[3].isdigit()
+    ):
+        return (int(words[3]), int(words[1]))
+
+    # No valid pattern matched - return (0, 0) for invalid input
+    return (0, 0)
 
 
 def _parse_input(options_list: List[dict]) -> Union[List[int], Tuple[str, int, int]]:
@@ -158,7 +185,7 @@ async def _combat_command(interaction):
     dark_dice_count = parsed_options.get("dark")
     endurance_value = parsed_options.get("endurance")
 
-    if dark_dice_count is None or endurance_value is None:
+    if dark_dice_count is None or endurance_value is None or dark_dice_count <= 0:
         return await interaction.response.send_message("Invalid options.")
 
     rolls = trophybot.dice.roll_pool(dark_dice_count)

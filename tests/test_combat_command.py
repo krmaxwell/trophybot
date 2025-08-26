@@ -179,13 +179,9 @@ async def test_combat_command_zero_dice_count(monkeypatch):
 
     await combat_command.callback(fake_interaction)
 
-    # Should handle empty dice gracefully and return a proper response
+    # Should reject zero dice count with error message
     assert len(responses) == 1
-    response = responses[0]
-    assert "Dice:" in response
-    assert "Outcome:" in response
-    # Should show failure when rolling 0 dice vs any target
-    assert "Failure" in response
+    assert responses[0] == "Invalid options."
 
 
 @pytest.mark.asyncio
