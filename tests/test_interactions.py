@@ -49,7 +49,6 @@ def test_ping(client):
 
 def test_roll_endpoint_no_options(client, monkeypatch):
     """Tests the /roll endpoint with no options (plain /roll)."""
-    monkeypatch.setattr("trophybot.dice.roll_d6", lambda: 4)
     body = json.dumps(
         {
             "type": 2,
@@ -61,7 +60,9 @@ def test_roll_endpoint_no_options(client, monkeypatch):
     data = resp.get_json()
     # type 4 = CHANNEL_MESSAGE_WITH_SOURCE
     assert data["type"] == 4
-    assert data["data"]["content"] == "Die roll: 4"
+    assert data["data"]["content"] == (
+        "Please specify dice to roll (e.g. 'light 3', 'dark 2', 'light 1 dark 2')"
+    )
 
 
 def test_roll_endpoint_with_input_string(client, monkeypatch):

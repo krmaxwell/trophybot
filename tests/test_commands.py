@@ -9,7 +9,11 @@ from trophybot.bot import roll_command
 @pytest.mark.parametrize(
     "options_data, dice_mocks, expected",
     [
-        ([], {"roll_d6": lambda: 4}, "Die roll: 4"),
+        (
+            [],
+            {},
+            "Please specify dice to roll (e.g. 'light 3', 'dark 2', 'light 1 dark 2')",
+        ),
         (
             [{"name": "input", "value": "3"}],
             {

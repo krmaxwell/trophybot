@@ -87,7 +87,7 @@ def _parse_light_dark_input(text: str) -> Optional[Tuple[int, int]]:
     ):
         return (int(words[3]), int(words[1]))
 
-    # No valid pattern matched - return (0, 0) for invalid input
+    # Keywords found but invalid format - return (0, 0) for invalid input
     return (0, 0)
 
 
@@ -106,12 +106,20 @@ def _parse_input(options_list: List[dict]) -> Union[List[int], Tuple[str, int, i
     if not input_text:
         return []
 
+    # Check if text contains light/dark keywords
+    lower_text = input_text.lower()
+    has_light_dark_keywords = "light" in lower_text or "dark" in lower_text
+
     # Check for light/dark keywords using the new parser
     light_dark_result = _parse_light_dark_input(input_text)
     if light_dark_result and (light_dark_result[0] > 0 or light_dark_result[1] > 0):
         return ("light_dark", light_dark_result[0], light_dark_result[1])
 
-    # Fallback: extract digits only (original behavior)
+    # If keywords are present but parsing returned (0, 0), it's invalid format
+    if has_light_dark_keywords and light_dark_result == (0, 0):
+        return []
+
+    # No keywords found - fallback: extract digits only (original behavior)
     return [int(d) for d in re.findall(r"\d", input_text)]
 
 
@@ -150,7 +158,9 @@ async def _roll_command(interaction: Any) -> Any:
     digits = parsed if isinstance(parsed, list) else []
 
     if len(digits) == 0:
-        return await _handle_single_d6_roll(interaction)
+        return await interaction.response.send_message(
+            "Please specify dice to roll (e.g. 'light 3', 'dark 2', 'light 1 dark 2')"
+        )
     if len(digits) == 1:
         return await _handle_pool_roll(interaction, digits[0])
 

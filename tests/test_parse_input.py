@@ -82,3 +82,21 @@ def test_parse_input_reversed_dark_light():
     options = [{"name": "input", "value": "dark 1 light 4"}]
     result = _parse_input(options)
     assert result == ("light_dark", 4, 1)
+
+
+def test_parse_input_invalid_light_dark_should_not_fallback():
+    """Should not fall back to digit parsing when light/dark format is invalid."""
+    # "light 0" is invalid light/dark format, should not fallback to [0] digit parsing
+    options = [{"name": "input", "value": "light 0"}]
+    result = _parse_input(options)
+    # Should return empty list indicating invalid input, not fallback to digit [0]
+    assert result == []
+
+
+def test_parse_input_ambiguous_should_not_fallback():
+    """Should not fall back to digit parsing for ambiguous light/dark input."""
+    # "3 light 2 dark" is ambiguous, should not fallback to [3, 2] digit parsing
+    options = [{"name": "input", "value": "3 light 2 dark"}]
+    result = _parse_input(options)
+    # Should return empty list indicating invalid input, not fallback to [3, 2]
+    assert result == []
